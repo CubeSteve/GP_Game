@@ -12,7 +12,7 @@ public class PlayerController : MonoBehaviour
 
     public float speed = 1000;
     public float maxSpeed = 1000;
-    public float counterMovement = 0.175f;
+    public float counterMovement = 1.0f;
 
     // Start is called before the first frame update
     void Start()
@@ -50,11 +50,11 @@ public class PlayerController : MonoBehaviour
         // rb.velocity.x > 0 && mag.x < 0.5 || rb.velocity.x < 0 && mag.x > -0.5
         if (rb.velocity.x > 0 && mag.x < 0.5 || rb.velocity.x < 0 && mag.x > -0.5)
         {
-            rb.AddForce(-rb.velocity.x * speed, 0, 0);
+            rb.AddForce(-rb.velocity.x * speed * counterMovement, 0, 0);
         }
         if (rb.velocity.z > 0 && mag.z < 0.5 || rb.velocity.z < 0 && mag.z > -0.5)
         {
-            rb.AddForce(0, 0, -rb.velocity.z * speed);
+            rb.AddForce(0, 0, -rb.velocity.z * speed * counterMovement);
         }
     }
 
