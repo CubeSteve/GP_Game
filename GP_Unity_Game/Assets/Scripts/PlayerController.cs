@@ -22,6 +22,7 @@ public class PlayerController : MonoBehaviour
     public float counterMovement = 500;
     public float cameraSensitivityX = 0.1f;
     public float cameraSensitivityY = 0.1f;
+    public bool doubleJumpActive;
 
     // Start is called before the first frame update
     void Start()
@@ -29,6 +30,7 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         grounded = true;
         doubleJump = false;
+        doubleJumpActive = false;
     }
 
     // Update is called once per frame
@@ -87,7 +89,11 @@ public class PlayerController : MonoBehaviour
         {
             rb.AddForce(0, jumpHeight, 0);
             grounded = false;
-            doubleJump = false;
+
+            if (doubleJumpActive == false)
+            {
+                doubleJump = false;
+            }
         }
     }
 
