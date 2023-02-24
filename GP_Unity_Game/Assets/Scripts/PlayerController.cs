@@ -9,14 +9,17 @@ public class PlayerController : MonoBehaviour
     private Rigidbody rb;
     private float movementX;
     private float movementY;
+    private bool grounded;
+    private bool doubleJump;
 
     public Transform characterMesh;
     public Transform cam;
     public Transform orientation;
     public Transform rotationPoint;
-    public float speed = 1000;
-    public float maxSpeed = 1000;
-    public float counterMovement = 0.5f;
+    public float speed = 4000;
+    public float maxSpeed = 5000;
+    public float jumpHeight = 20000;
+    public float counterMovement = 500;
     public float cameraSensitivityX = 0.1f;
     public float cameraSensitivityY = 0.1f;
 
@@ -24,6 +27,8 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        grounded = true;
+        doubleJump = false;
     }
 
     // Update is called once per frame
@@ -32,7 +37,6 @@ public class PlayerController : MonoBehaviour
         Vector3 movement = new Vector3(movementX, 0.0f, movementY);
 
         CounterMovement(movement);
-        //rb.AddForce(movement.x * speed, 0, movement.z * speed);
 
         rb.AddForce(orientation.transform.forward * movement.z * speed);
         rb.AddForce(orientation.transform.right * movement.x * speed);
@@ -70,11 +74,21 @@ public class PlayerController : MonoBehaviour
         Vector2 lookVector = lookValue.Get<Vector2>();
 
         cam.transform.RotateAround(rotationPoint.transform.position, Vector3.up, lookVector.x * cameraSensitivityX);
-        cam.transform.RotateAround(rotationPoint.transform.position, Vector3.left, lookVector.y * cameraSensitivityY);
+        //cam.transform.RotateAround(rotationPoint.transform.position, Vector3.left, lookVector.y * cameraSensitivityY);
         orientation.transform.RotateAround(rotationPoint.transform.position, Vector3.up, lookVector.x * cameraSensitivityX);
-        orientation.transform.RotateAround(rotationPoint.transform.position, Vector3.left, lookVector.y * cameraSensitivityY);
+        //orientation.transform.RotateAround(rotationPoint.transform.position, Vector3.left, lookVector.y * cameraSensitivityY); Specifically not this
         characterMesh.transform.RotateAround(rotationPoint.transform.position, Vector3.up, lookVector.x * cameraSensitivityX);
-        characterMesh.transform.RotateAround(rotationPoint.transform.position, Vector3.left, lookVector.y * cameraSensitivityY);
+        //characterMesh.transform.RotateAround(rotationPoint.transform.position, Vector3.left, lookVector.y * cameraSensitivityY);
+    }
+
+    private void OnJump(InputValue jumpValue)
+    {
+        if (grounded)
+        {
+            rb.AddForce(0, jumpHeight, 0);
+            grounded = false;
+            doubleJump = false;
+        }
     }
 
     private void CounterMovement(Vector3 input)
@@ -152,6 +166,9 @@ public class PlayerController : MonoBehaviour
 
     private Vector2 FindVelRelativeToLook()
     {
+        /*
+         * I might need this if i want to change how countermovement is calculated
+         */
         float lookAngle = orientation.transform.eulerAngles.y;
         float moveAngle = Mathf.Atan2(rb.velocity.x, rb.velocity.y) * Mathf.Rad2Deg;
 
@@ -163,6 +180,29 @@ public class PlayerController : MonoBehaviour
         float yMag = magnitude * Mathf.Cos(u * Mathf.Rad2Deg);
 
         return new Vector2(xMag, yMag);
+    }
+
+    private void OnCollisionStay(Collision collision)
+    {
+        /*
+         * Handle ground collision detection on all objects with the "Ground" layer
+         */
+
+        if (doubleJump)
+        {
+            // Only check if the layer is the ground layer
+            int layer = collision.gameObject.layer;
+            if (layer != 6)
+            {
+                return;
+            }
+
+            grounded = true;
+
+            doubleJump = false;
+        }
+
+        doubleJump = true;
     }
 
 }
