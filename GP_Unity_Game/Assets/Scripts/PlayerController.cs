@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour
     public Transform cam;
     public Transform orientation;
     public Transform rotationPoint;
+    public Transform attackInteractionZone;
     public float speed = 4000;
     public float maxSpeed = 5000;
     public float jumpHeight = 20000;
@@ -34,6 +35,9 @@ public class PlayerController : MonoBehaviour
         grounded = true;
         doubleJump = false;
         doubleJumpActive = false;
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     // Update is called once per frame
@@ -94,6 +98,7 @@ public class PlayerController : MonoBehaviour
         //orientation.transform.RotateAround(rotationPoint.transform.position, Vector3.left, lookVector.y * cameraSensitivityY); Specifically not this
         characterMesh.transform.RotateAround(rotationPoint.transform.position, Vector3.up, lookVector.x * cameraSensitivityX);
         //characterMesh.transform.RotateAround(rotationPoint.transform.position, Vector3.left, lookVector.y * cameraSensitivityY);
+
     }
 
     private void OnJump(InputValue jumpValue)
@@ -114,7 +119,16 @@ public class PlayerController : MonoBehaviour
     {
         if (!animator.GetBool("isAttacking"))
         {
-            animator.SetBool("isAttacking", true);
+            //Check if interactions available
+            if (attackInteractionZone.GetComponent<AttackInteractionZoneController>().IsInteract())
+            {
+                //AttackInteractionZoneController will handle the rest
+            }
+            //If no interactions do attack animation
+            else
+            {
+                animator.SetBool("isAttacking", true);
+            }
         }
     }
 
