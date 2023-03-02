@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
 {
     // Declare variables
     private Rigidbody rb;
+    private Animator animator;
     private float movementX;
     private float movementY;
     private bool grounded;
@@ -28,6 +29,8 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        animator = GetComponent<Animator>();
+
         grounded = true;
         doubleJump = false;
         doubleJumpActive = false;
@@ -44,6 +47,16 @@ public class PlayerController : MonoBehaviour
         rb.AddForce(orientation.transform.right * movement.x * speed);
 
         // print("X Vel: " + rb.velocity.x + " Mag: " + movement.x + " mmX: " + movementX + " --- Y Vel: " + rb.velocity.z + " Mag: " + movement.z + " mmY: " + movementY);
+
+        // Update animation
+        if ((rb.velocity.x > 0.2 || rb.velocity.x < -0.2 || rb.velocity.z > 0.2 || rb.velocity.z < -0.2) && animator.GetBool("isMoving") == false)
+        {
+            animator.SetBool("isMoving", true);
+        }
+        else if (((rb.velocity.x < 0.2 && rb.velocity.x > -0.2) || (rb.velocity.z < 0.2 && rb.velocity.z > -0.2)) && animator.GetBool("isMoving") == true)
+        {
+            animator.SetBool("isMoving", false);
+        }
     }
 
     // Methods
@@ -94,6 +107,14 @@ public class PlayerController : MonoBehaviour
             {
                 doubleJump = false;
             }
+        }
+    }
+
+    private void OnAttack(InputValue attackValue)
+    {
+        if (!animator.GetBool("isAttacking"))
+        {
+            animator.SetBool("isAttacking", true);
         }
     }
 

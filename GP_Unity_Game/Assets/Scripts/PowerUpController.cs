@@ -4,7 +4,8 @@ using UnityEngine;
 
 public enum PowerUpType
 {
-    doubleJump
+    doubleJump,
+    speedBoost
 }
 
 public class PowerUpController : MonoBehaviour
@@ -14,7 +15,16 @@ public class PowerUpController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        //Check power up to use
+        switch (powerUpType)
+        {
+            case PowerUpType.doubleJump:
+                this.GetComponent<MeshRenderer>().material.color = Color.yellow;
+                break;
+            case PowerUpType.speedBoost:
+                this.GetComponent<MeshRenderer>().material.color = Color.green;
+                break;
+        }
     }
 
     // Update is called once per frame
@@ -33,6 +43,10 @@ public class PowerUpController : MonoBehaviour
             {
                 case PowerUpType.doubleJump:
                     other.gameObject.GetComponent<PlayerController>().doubleJumpActive = true;
+                    break;
+                case PowerUpType.speedBoost:
+                    other.gameObject.GetComponent<PlayerController>().speed *= 2;
+                    other.gameObject.GetComponent<PlayerController>().maxSpeed *= 2;
                     break;
             }
 
