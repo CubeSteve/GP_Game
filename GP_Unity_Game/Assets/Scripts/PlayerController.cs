@@ -112,6 +112,9 @@ public class PlayerController : MonoBehaviour
             {
                 doubleJump = false;
             }
+
+            //jump animation
+            animator.SetBool("isJumping", true);
         }
     }
 
@@ -241,6 +244,9 @@ public class PlayerController : MonoBehaviour
             grounded = true;
 
             doubleJump = false;
+
+            //Land animation
+            animator.SetBool("isJumping", false);
         }
 
         doubleJump = true;
