@@ -2,8 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DoorController : MonoBehaviour
+public class SwitchController : MonoBehaviour
 {
+    public Transform linkedDoor;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -16,8 +18,9 @@ public class DoorController : MonoBehaviour
         
     }
 
-    public void OpenDoor()
+    public bool ActivateDoor()
     {
-        gameObject.SetActive(false);
+        linkedDoor.GetComponent<DoorController>().OpenDoor();
+        return true;
     }
 }

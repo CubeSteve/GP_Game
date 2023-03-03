@@ -34,7 +34,7 @@ public class AttackInteractionZoneController : MonoBehaviour
         {
             foreach (var trigger in triggerList)
             {
-                if (trigger.gameObject.GetComponent<DoorController>().OpenDoor())
+                if (trigger.gameObject.GetComponent<SwitchController>().ActivateDoor())
                 {
                     return true;
                 }

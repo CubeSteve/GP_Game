@@ -47,6 +47,9 @@ public class PowerUpController : MonoBehaviour
                 case PowerUpType.speedBoost:
                     other.gameObject.GetComponent<PlayerController>().speed *= 2;
                     other.gameObject.GetComponent<PlayerController>().maxSpeed *= 2;
+
+                    //"Run" animation
+                    other.gameObject.GetComponent<Animator>().SetBool("isRunning", true);
                     break;
             }
 
