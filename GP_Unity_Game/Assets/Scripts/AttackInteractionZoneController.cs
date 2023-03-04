@@ -29,23 +29,19 @@ public class AttackInteractionZoneController : MonoBehaviour
 
     public bool IsInteract()
     {
-        //Try catch in case triggerList is empty
-        try
+        //In case triggerList is empty
+        if (triggerList.Count != 0)
         {
             foreach (var trigger in triggerList)
             {
-                if (trigger.gameObject.GetComponent<SwitchController>().ActivateDoor())
+                //Check it has a switch controller
+                if (trigger.gameObject.GetComponent<SwitchController>() != null && trigger.gameObject.GetComponent<SwitchController>().ActivateDoor())
                 {
                     return true;
                 }
             }
-
-            return false;
         }
-
-        catch
-        {
-            return false;
-        }
+        
+        return false;
     }
 }
