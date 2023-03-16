@@ -257,24 +257,35 @@ public class PlayerController : MonoBehaviour
     private void OnCollisionStay(Collision collision)
     {
         /*
-         * Handle ground collision detection on all objects with the "Ground" layer
+         * Handle ground collision detection
          */
 
         if (doubleJump)
         {
-            // Only check if the layer is the ground layer
+            // All objects with the "Ground" layer
             int layer = collision.gameObject.layer;
-            if (layer != 6)
+            if (layer == 6)
             {
-                return;
+                grounded = true;
+
+                doubleJump = false;
+
+                // Land animation
+                animator.SetBool("isJumping", false);
             }
 
-            grounded = true;
+            // All objects with the "Platform" layer
+            else if (layer == 7)
+            {
+                grounded = true;
 
-            doubleJump = false;
+                doubleJump = false;
 
-            //Land animation
-            animator.SetBool("isJumping", false);
+                // Land animation
+                animator.SetBool("isJumping", false);
+
+                // Add momentum to player
+            }
         }
 
         doubleJump = true;
