@@ -12,12 +12,15 @@ public class PlayerController : MonoBehaviour
     private float movementY;
     private bool grounded;
     private bool doubleJump;
+    private Vector2 lookVector;
+    private bool lookExecuted;
 
     public Transform characterMesh;
     public Transform cam;
     public Transform orientation;
     public Transform rotationPoint;
     public Transform attackInteractionZone;
+    public Transform pauseCanvas;
     public float speed = 4000;
     public float maxSpeed = 5000;
     public float jumpHeight = 20000;
@@ -35,6 +38,7 @@ public class PlayerController : MonoBehaviour
         grounded = true;
         doubleJump = false;
         doubleJumpActive = false;
+        lookExecuted = false;
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -61,6 +65,20 @@ public class PlayerController : MonoBehaviour
         {
             animator.SetBool("isMoving", false);
         }
+
+        // Move camera
+        // If not paused and look not executed
+        if (Time.timeScale != 0 && !lookExecuted)
+        {
+            cam.transform.RotateAround(rotationPoint.transform.position, Vector3.up, lookVector.x * cameraSensitivityX);
+            //cam.transform.RotateAround(rotationPoint.transform.position, Vector3.left, lookVector.y * cameraSensitivityY);
+
+            orientation.transform.RotateAround(rotationPoint.transform.position, Vector3.up, lookVector.x * cameraSensitivityX);
+            //orientation.transform.RotateAround(rotationPoint.transform.position, Vector3.left, lookVector.y * cameraSensitivityY); Specifically not this
+            characterMesh.transform.RotateAround(rotationPoint.transform.position, Vector3.up, lookVector.x * cameraSensitivityX);
+            //characterMesh.transform.RotateAround(rotationPoint.transform.position, Vector3.left, lookVector.y * cameraSensitivityY);
+        }
+        lookExecuted = false;
     }
 
     // Methods
@@ -90,11 +108,10 @@ public class PlayerController : MonoBehaviour
          * Moves camera
          */
 
+        lookVector = lookValue.Get<Vector2>();
         // If not paused
         if (Time.timeScale != 0)
         {
-            Vector2 lookVector = lookValue.Get<Vector2>();
-
             cam.transform.RotateAround(rotationPoint.transform.position, Vector3.up, lookVector.x * cameraSensitivityX);
             //cam.transform.RotateAround(rotationPoint.transform.position, Vector3.left, lookVector.y * cameraSensitivityY);
 
@@ -102,8 +119,9 @@ public class PlayerController : MonoBehaviour
             //orientation.transform.RotateAround(rotationPoint.transform.position, Vector3.left, lookVector.y * cameraSensitivityY); Specifically not this
             characterMesh.transform.RotateAround(rotationPoint.transform.position, Vector3.up, lookVector.x * cameraSensitivityX);
             //characterMesh.transform.RotateAround(rotationPoint.transform.position, Vector3.left, lookVector.y * cameraSensitivityY);
-        }
 
+            lookExecuted = true;
+        }
     }
 
     private void OnJump(InputValue jumpValue)
@@ -138,6 +156,11 @@ public class PlayerController : MonoBehaviour
                 animator.SetBool("isAttacking", true);
             }
         }
+    }
+
+    private void OnPause()
+    {
+        pauseCanvas.GetComponent<CanvasController>().PauseGame();
     }
 
     private void CounterMovement(Vector3 input)

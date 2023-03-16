@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028352, g: 0.22571376, b: 0.3069224, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -705,6 +705,7 @@ MonoBehaviour:
   orientation: {fileID: 1539056448}
   rotationPoint: {fileID: 388976664}
   attackInteractionZone: {fileID: 1386692340}
+  pauseCanvas: {fileID: 883565660}
   speed: 4000
   maxSpeed: 5000
   jumpHeight: 20000
@@ -1212,7 +1213,6 @@ GameObject:
   - component: {fileID: 883565658}
   - component: {fileID: 883565657}
   - component: {fileID: 883565661}
-  - component: {fileID: 883565662}
   m_Layer: 5
   m_Name: Pause Canvas
   m_TagString: Untagged
@@ -1315,36 +1315,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f21e5e3920e0b5443bca582de52bf727, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &883565662
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 883565656}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: dae894c7caa477e40a0c5e96cf2df74a, type: 3}
-  m_NotificationBehavior: 0
-  m_UIInputModule: {fileID: 0}
-  m_DeviceLostEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_DeviceRegainedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ControlsChangedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ActionEvents: []
-  m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: 
-  m_DefaultActionMap: Player
-  m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
 --- !u!1 &946483482
 GameObject:
   m_ObjectHideFlags: 0
@@ -1853,6 +1823,7 @@ MonoBehaviour:
   orientation: {fileID: 1054292579}
   rotationPoint: {fileID: 1054292579}
   attackInteractionZone: {fileID: 0}
+  pauseCanvas: {fileID: 0}
   speed: 1000
   maxSpeed: 1000
   jumpHeight: 10000
