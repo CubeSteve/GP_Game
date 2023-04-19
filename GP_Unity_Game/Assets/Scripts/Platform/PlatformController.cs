@@ -43,11 +43,17 @@ public class PlatformController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        other.transform.SetParent(transform);
+        if (other.tag == "Player")
+        {
+            other.transform.SetParent(transform);
+        }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        other.transform.SetParent(null);
+        if (other.tag == "Player")
+        {
+            other.transform.SetParent(null);
+        }
     }
 }
