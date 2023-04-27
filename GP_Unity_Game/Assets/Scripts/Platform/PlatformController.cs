@@ -36,6 +36,7 @@ public class PlatformController : MonoBehaviour
 
     private void TargetNextWaypoint()
     {
+        //Targets the next waypoint in the list
         previousWaypoint = waypointController.GetWaypoint(nextWaypointIndex);
         nextWaypointIndex = waypointController.GetNextWaypointIndex(nextWaypointIndex);
         nextWaypoint = waypointController.GetWaypoint(nextWaypointIndex);
@@ -43,6 +44,7 @@ public class PlatformController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        //Attach player to platform
         if (other.tag == "Player")
         {
             other.transform.SetParent(transform);
@@ -51,6 +53,7 @@ public class PlatformController : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
+        //Detach player from platform
         if (other.tag == "Player")
         {
             other.transform.SetParent(null);
