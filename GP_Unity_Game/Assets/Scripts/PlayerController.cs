@@ -169,6 +169,8 @@ public class PlayerController : MonoBehaviour
             //Check if interactions available
             if (attackInteractionZone.GetComponent<AttackInteractionZoneController>().IsInteract())
             {
+                //Animate pressing button
+                animator.SetBool("isPressing", true);
                 //AttackInteractionZoneController will handle the rest
             }
             //If no interactions do attack animation
