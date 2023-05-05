@@ -21,13 +21,18 @@ public class PlayerController : MonoBehaviour
     public Transform rotationPoint;
     public Transform attackInteractionZone;
     public Transform pauseCanvas;
+    public Transform targetArea;
+
     public float speed = 4000;
     public float maxSpeed = 5000;
     public float jumpHeight = 20000;
     public float counterMovement = 500;
     public float cameraSensitivityX = 0.1f;
     public float cameraSensitivityY = 0.1f;
-    public bool doubleJumpActive;
+    [HideInInspector] public bool doubleJumpActive;
+
+    [HideInInspector] public GameObject target;
+    [HideInInspector] public bool targeting;
 
     // Start is called before the first frame update
     void Start()
@@ -42,6 +47,10 @@ public class PlayerController : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        //Targeting
+        target = null;
+        targeting = false;
     }
 
     // Update is called once per frame
@@ -79,6 +88,18 @@ public class PlayerController : MonoBehaviour
             //characterMesh.transform.RotateAround(rotationPoint.transform.position, Vector3.left, lookVector.y * cameraSensitivityY);
         }
         lookExecuted = false;
+
+        // Targeting
+        if (targeting)
+        {
+            //Calculate angle of enemy to player
+            //Angle of enemy to player + 180 = opposite of camera to enemy
+            /*
+             * float angle = 
+             * cam.transform.RotateAround(rotationPoint.transform.position, Vector3.up, 0);
+            */
+            cam.LookAt(target.transform);
+        }
     }
 
     // Methods
@@ -161,6 +182,23 @@ public class PlayerController : MonoBehaviour
     private void OnPause()
     {
         pauseCanvas.GetComponent<CanvasController>().PauseGame();
+    }
+
+    private void OnTarget()
+    {
+        if (target != null && !targeting)
+        {
+            targeting = true;
+            cam.LookAt(target.transform);
+        }
+
+        else if (targeting)
+        {
+            targeting = false;
+            cam.LookAt(this.transform);
+            cam.Rotate(-22, 0, 0);
+            //cam.rotation = Quaternion.Euler(15, cam.rotation.y, cam.rotation.z);
+        }
     }
 
     private void CounterMovement(Vector3 input)
@@ -290,5 +328,29 @@ public class PlayerController : MonoBehaviour
 
         doubleJump = true;
     }
+
+    /*
+    private void OnTriggerEnter(Collider other)
+    {
+        //For targeting
+        //8 = Target
+        if (other.gameObject.layer == 8)
+        {
+            target = other.gameObject;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        //For targeting
+        if (other.gameObject == target)
+        {
+            target = null;
+            targeting = false;
+            cam.LookAt(this.transform);
+            cam.rotation = Quaternion.Euler(15, 0, 0);
+        }
+    }
+    */
 
 }

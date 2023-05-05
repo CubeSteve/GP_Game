@@ -19,10 +19,10 @@ public class PowerUpController : MonoBehaviour
         switch (powerUpType)
         {
             case PowerUpType.doubleJump:
-                this.GetComponent<MeshRenderer>().material.color = Color.yellow;
+                this.GetComponent<MeshRenderer>().material.color = Color.green;
                 break;
             case PowerUpType.speedBoost:
-                this.GetComponent<MeshRenderer>().material.color = Color.green;
+                this.GetComponent<MeshRenderer>().material.color = Color.yellow;
                 break;
         }
     }
@@ -43,7 +43,9 @@ public class PowerUpController : MonoBehaviour
             {
                 case PowerUpType.doubleJump:
                     other.gameObject.GetComponent<PlayerController>().doubleJumpActive = true;
+                    other.gameObject.GetComponent<ParticleSystem>().Play();
                     break;
+
                 case PowerUpType.speedBoost:
                     other.gameObject.GetComponent<PlayerController>().speed *= 2;
                     other.gameObject.GetComponent<PlayerController>().maxSpeed *= 2;
