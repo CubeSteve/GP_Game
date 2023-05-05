@@ -25,5 +25,9 @@ public class DoorController : MonoBehaviour
         //Enable player
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         player.GetComponent<PlayerInput>().enabled = true;
+        //Get camera to reset it
+        Transform cam = player.transform.GetChild(1);
+        cam.LookAt(player.transform);
+        cam.Rotate(-22, 0, 0);
     }
 }

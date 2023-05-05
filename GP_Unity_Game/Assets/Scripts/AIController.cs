@@ -16,6 +16,8 @@ public class AIController : MonoBehaviour
     private TargetState targetState;
     private GameObject player;
 
+    private int hp;
+
     public enum TargetState
     {
         Patroling,
@@ -35,6 +37,8 @@ public class AIController : MonoBehaviour
         agent.SetDestination(nextWaypoint.position);
 
         player = GameObject.FindWithTag("Player");
+
+        hp = 3;
     }
 
     // Update is called once per frame
@@ -72,7 +76,7 @@ public class AIController : MonoBehaviour
                 }
 
                 //If next to player, attack them
-                if (Vector3.Distance(this.GetComponent<Transform>().position, player.GetComponent<Transform>().position) < 3)
+                if (Vector3.Distance(this.GetComponent<Transform>().position, player.GetComponent<Transform>().position) < 10)
                 {
                     targetState = TargetState.Attacking;
                 }
@@ -101,6 +105,33 @@ public class AIController : MonoBehaviour
             targetState = TargetState.Patroling;
             agent.isStopped = false;
             agent.SetDestination(nextWaypoint.position);
+        }
+    }
+
+    public void TakeDamage()
+    {
+        hp--;
+        if (hp <= 0)
+        {
+            if (this.transform.localScale == new Vector3(5, 5, 5))
+            {
+                this.transform.localScale = new Vector3(3, 3, 3);
+                this.GetComponent<NavMeshAgent>().baseOffset = 0.3f;
+                hp = 2;
+                GameObject.Instantiate(this, this.transform.position, this.transform.rotation);
+            }
+            else if (this.transform.localScale == new Vector3(3, 3, 3))
+            {
+                this.transform.localScale = new Vector3(1, 1, 1);
+                this.GetComponent<NavMeshAgent>().baseOffset = 0.1f;
+                hp = 1;
+                GameObject.Instantiate(this, this.transform.position, this.transform.rotation);
+            }
+            else
+            {
+                player.GetComponent<PlayerController>().UpdateTriggerList(this.gameObject);
+                Destroy(this.gameObject);
+            }
         }
     }
 }

@@ -4,26 +4,26 @@ using UnityEngine;
 
 public class AttackInteractionZoneController : MonoBehaviour
 {
-    List<Collider> triggerList;
+    [HideInInspector] public List<GameObject> triggerList;
 
     private void Start()
     {
-        triggerList = new List<Collider>();
+        triggerList = new List<GameObject>();
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!triggerList.Contains(other))
+        if (!triggerList.Contains(other.gameObject))
         {
-            triggerList.Add(other);
+            triggerList.Add(other.gameObject);
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (triggerList.Contains(other))
+        if (triggerList.Contains(other.gameObject))
         {
-            triggerList.Remove(other);
+            triggerList.Remove(other.gameObject);
         }
     }
 
@@ -43,5 +43,21 @@ public class AttackInteractionZoneController : MonoBehaviour
         }
         
         return false;
+    }
+
+    public GameObject IsEnemy()
+    {
+        if (triggerList.Count != 0)
+        {
+            foreach (var trigger in triggerList)
+            {
+                if (trigger.gameObject.tag == "Enemy")
+                {
+                    return trigger.gameObject;
+                }
+            }
+        }
+
+        return null;
     }
 }

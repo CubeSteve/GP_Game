@@ -171,12 +171,18 @@ public class PlayerController : MonoBehaviour
             {
                 //Animate pressing button
                 animator.SetBool("isPressing", true);
+                cam.LookAt(target.transform);
                 //AttackInteractionZoneController will handle the rest
             }
             //If no interactions do attack animation
             else
             {
                 animator.SetBool("isAttacking", true);
+                GameObject enemy = attackInteractionZone.GetComponent<AttackInteractionZoneController>().IsEnemy();
+                if (enemy != null)
+                {
+                    enemy.GetComponent<AIController>().TakeDamage();
+                }
             }
         }
     }
@@ -329,6 +335,11 @@ public class PlayerController : MonoBehaviour
         }
 
         doubleJump = true;
+    }
+
+    public void UpdateTriggerList(GameObject enemy)
+    {
+        attackInteractionZone.GetComponent<AttackInteractionZoneController>().triggerList.Remove(enemy);
     }
 
     /*
