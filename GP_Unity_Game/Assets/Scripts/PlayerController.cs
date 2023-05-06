@@ -15,13 +15,15 @@ public class PlayerController : MonoBehaviour
     private Vector2 lookVector;
     private bool lookExecuted;
 
+    private bool takingDamage;
+
     public Transform characterMesh;
     public Transform cam;
     public Transform orientation;
     public Transform rotationPoint;
     public Transform attackInteractionZone;
     public Transform pauseCanvas;
-    public Transform targetArea;
+    public Transform damageCanvas;
 
     public float speed = 4000;
     public float maxSpeed = 5000;
@@ -33,6 +35,8 @@ public class PlayerController : MonoBehaviour
 
     [HideInInspector] public GameObject target;
     [HideInInspector] public bool targeting;
+
+    public float iFrames = 1;
 
     // Start is called before the first frame update
     void Start()
@@ -99,6 +103,21 @@ public class PlayerController : MonoBehaviour
              * cam.transform.RotateAround(rotationPoint.transform.position, Vector3.up, 0);
             */
             cam.LookAt(target.transform);
+        }
+
+        // Taking damage
+        if (takingDamage)
+        {
+            if (iFrames <= 0)
+            {
+                iFrames = 1;
+                takingDamage = false;
+                damageCanvas.gameObject.SetActive(false);
+            }
+            else
+            {
+                iFrames -= Time.deltaTime;
+            }
         }
     }
 
@@ -340,6 +359,15 @@ public class PlayerController : MonoBehaviour
     public void UpdateTriggerList(GameObject enemy)
     {
         attackInteractionZone.GetComponent<AttackInteractionZoneController>().triggerList.Remove(enemy);
+    }
+
+    public void TakeDamage()
+    {
+        if (!takingDamage)
+        {
+            takingDamage = true;
+            damageCanvas.gameObject.SetActive(true);
+        }
     }
 
     /*

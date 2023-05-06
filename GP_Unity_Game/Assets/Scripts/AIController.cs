@@ -1,3 +1,4 @@
+using RPGCharacterAnims.Actions;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -15,9 +16,12 @@ public class AIController : MonoBehaviour
     private NavMeshAgent agent;
     private TargetState targetState;
     private GameObject player;
+    private Rigidbody rb;
+    private bool grounded;
 
     private int hp;
     private float damageTimer;
+    private int attackRange;
 
     public enum TargetState
     {
@@ -34,6 +38,8 @@ public class AIController : MonoBehaviour
         targetState = TargetState.Patroling;
         nextWaypointIndex = 0;
         nextWaypoint = waypointController.GetWaypoint(nextWaypointIndex);
+        rb = GetComponent<Rigidbody>();
+        grounded = true;
 
         agent.SetDestination(nextWaypoint.position);
 
@@ -42,6 +48,7 @@ public class AIController : MonoBehaviour
         if (this.transform.localScale == new Vector3(5, 5, 5))
         {
             hp = 3;
+            attackRange = 10;
         }
         damageTimer = 0;
     }
@@ -92,9 +99,14 @@ public class AIController : MonoBehaviour
                 }
 
                 //If next to player, attack them
-                if (Vector3.Distance(this.GetComponent<Transform>().position, player.GetComponent<Transform>().position) < 5)
+                if (Vector3.Distance(this.GetComponent<Transform>().position, player.GetComponent<Transform>().position) < attackRange)
                 {
                     targetState = TargetState.Attacking;
+                    agent.enabled = false;
+                    rb.isKinematic = false;
+
+                    rb.AddRelativeForce(new Vector3(0,200,200));
+                    grounded = false;
                 }
                 break;
 
@@ -106,7 +118,7 @@ public class AIController : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         //Player enters enemy view range
-        if (other.tag == "Player")
+        if (agent.isActiveAndEnabled && other.tag == "Player")
         {
             targetState = TargetState.Spotted;
             agent.isStopped = true;
@@ -116,7 +128,7 @@ public class AIController : MonoBehaviour
     private void OnTriggerExit(Collider other)
     {
         //Player exits view range
-        if (other.tag == "Player")
+        if (agent.isActiveAndEnabled && other.tag == "Player")
         {
             targetState = TargetState.Patroling;
             agent.isStopped = false;
@@ -136,22 +148,60 @@ public class AIController : MonoBehaviour
         {
             if (this.transform.localScale == new Vector3(5, 5, 5))
             {
-                this.transform.localScale = new Vector3(3, 3, 3);
-                this.GetComponent<NavMeshAgent>().baseOffset = 0.3f;
-                hp = 2;
-                GameObject.Instantiate(this, this.transform.position, this.transform.rotation);
+                this.transform.localScale = new Vector3(3, 3, 3); // Scale
+                this.GetComponent<NavMeshAgent>().baseOffset = 0.35f; // Stop floating
+                hp = 2; // New hp
+                attackRange = 6; // Update range to scale
+                this.GetComponent<CapsuleCollider>().radius = 8; // Update detection radius to scale
+
+                agent.enabled = true;
+                rb.isKinematic = true;
+                grounded = true;
+                targetState = TargetState.Chasing;
+
+                GameObject.Instantiate(this, this.transform.position, this.transform.rotation); // Create another AI
             }
             else if (this.transform.localScale == new Vector3(3, 3, 3))
             {
                 this.transform.localScale = new Vector3(1, 1, 1);
                 this.GetComponent<NavMeshAgent>().baseOffset = 0f;
                 hp = 1;
+                attackRange = 2;
+                this.GetComponent<CapsuleCollider>().radius = 25;
+
+                agent.enabled = true;
+                rb.isKinematic = true;
+                grounded = true;
+                targetState = TargetState.Chasing;
+
                 GameObject.Instantiate(this, this.transform.position, this.transform.rotation);
             }
             else
             {
                 player.GetComponent<PlayerController>().UpdateTriggerList(this.gameObject);
                 Destroy(this.gameObject);
+            }
+        }
+    }
+
+    private void OnCollisionStay(Collision collision)
+    {
+        if (!grounded)
+        {
+            // All objects with the "Ground" layer
+            int layer = collision.gameObject.layer;
+            if (layer == 6)
+            {
+                agent.enabled = true;
+                rb.isKinematic = true;
+                grounded = true;
+                targetState = TargetState.Chasing;
+            }
+
+            // Player collsion
+            else if (collision.gameObject.tag == "Player")
+            {
+                collision.gameObject.GetComponent<PlayerController>().TakeDamage();
             }
         }
     }
