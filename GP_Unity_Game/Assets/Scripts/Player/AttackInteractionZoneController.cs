@@ -34,8 +34,13 @@ public class AttackInteractionZoneController : MonoBehaviour
         {
             foreach (var trigger in triggerList)
             {
+                if (trigger == null)
+                {
+                    triggerList.Remove(trigger);
+                    return false;
+                }
                 //Check it has a switch controller
-                if (trigger.gameObject.GetComponent<SwitchController>() != null && trigger.gameObject.GetComponent<SwitchController>().ActivateDoor())
+                else if (trigger.gameObject.GetComponent<SwitchController>() != null && trigger.gameObject.GetComponent<SwitchController>().ActivateDoor())
                 {
                     return true;
                 }

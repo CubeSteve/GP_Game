@@ -10,11 +10,11 @@ public class AIController : MonoBehaviour
 {
     public WaypointController waypointController;
 
-    private Transform nextWaypoint;
+    [HideInInspector] public Transform nextWaypoint;
     private int nextWaypointIndex;
 
-    private NavMeshAgent agent;
-    private TargetState targetState;
+    [HideInInspector] public NavMeshAgent agent;
+    [HideInInspector] public TargetState targetState;
     private GameObject player;
     private Rigidbody rb;
     private bool grounded;
@@ -22,6 +22,7 @@ public class AIController : MonoBehaviour
     private int hp;
     private float damageTimer;
     private int attackRange;
+    private float attackDelay;
 
     public enum TargetState
     {
@@ -51,6 +52,7 @@ public class AIController : MonoBehaviour
             attackRange = 10;
         }
         damageTimer = 0;
+        attackDelay = 2;
     }
 
     // Update is called once per frame
@@ -65,6 +67,16 @@ public class AIController : MonoBehaviour
         else if (damageTimer != 0)
         {
             damageTimer -= Time.deltaTime;
+        }
+
+        //Attack delay
+        if (attackDelay < 0)
+        {
+            attackDelay = 0;
+        }
+        else if (attackDelay != 0)
+        {
+            attackDelay -= Time.deltaTime;
         }
 
         switch (targetState)
@@ -98,8 +110,8 @@ public class AIController : MonoBehaviour
                     agent.SetDestination(player.GetComponent<Transform>().position);
                 }
 
-                //If next to player, attack them
-                if (Vector3.Distance(this.GetComponent<Transform>().position, player.GetComponent<Transform>().position) < attackRange)
+                //If next to player and no attack delay, attack them
+                if (attackDelay == 0 && Vector3.Distance(this.GetComponent<Transform>().position, player.GetComponent<Transform>().position) < attackRange)
                 {
                     targetState = TargetState.Attacking;
                     agent.enabled = false;
@@ -112,27 +124,6 @@ public class AIController : MonoBehaviour
 
             case TargetState.Attacking:
                 break;
-        }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        //Player enters enemy view range
-        if (agent.isActiveAndEnabled && other.tag == "Player")
-        {
-            targetState = TargetState.Spotted;
-            agent.isStopped = true;
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        //Player exits view range
-        if (agent.isActiveAndEnabled && other.tag == "Player")
-        {
-            targetState = TargetState.Patroling;
-            agent.isStopped = false;
-            agent.SetDestination(nextWaypoint.position);
         }
     }
 
@@ -152,7 +143,7 @@ public class AIController : MonoBehaviour
                 this.GetComponent<NavMeshAgent>().baseOffset = 0.35f; // Stop floating
                 hp = 2; // New hp
                 attackRange = 6; // Update range to scale
-                this.GetComponent<CapsuleCollider>().radius = 8; // Update detection radius to scale
+                this.transform.GetChild(0).GetComponent<CapsuleCollider>().radius = 8; // Update detection radius to scale
 
                 agent.enabled = true;
                 rb.isKinematic = true;
@@ -167,7 +158,7 @@ public class AIController : MonoBehaviour
                 this.GetComponent<NavMeshAgent>().baseOffset = 0f;
                 hp = 1;
                 attackRange = 2;
-                this.GetComponent<CapsuleCollider>().radius = 25;
+                this.transform.GetChild(0).GetComponent<CapsuleCollider>().radius = 25;
 
                 agent.enabled = true;
                 rb.isKinematic = true;
@@ -196,6 +187,7 @@ public class AIController : MonoBehaviour
                 rb.isKinematic = true;
                 grounded = true;
                 targetState = TargetState.Chasing;
+                attackDelay = 2;
             }
 
             // Player collsion
