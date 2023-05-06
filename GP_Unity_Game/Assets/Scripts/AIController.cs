@@ -17,6 +17,7 @@ public class AIController : MonoBehaviour
     private GameObject player;
 
     private int hp;
+    private float damageTimer;
 
     public enum TargetState
     {
@@ -38,13 +39,28 @@ public class AIController : MonoBehaviour
 
         player = GameObject.FindWithTag("Player");
 
-        hp = 3;
+        if (this.transform.localScale == new Vector3(5, 5, 5))
+        {
+            hp = 3;
+        }
+        damageTimer = 0;
     }
 
     // Update is called once per frame
     void Update()
     {
-        switch(targetState)
+        //Damage colour
+        if (damageTimer < 0)
+        {
+            damageTimer = 0;
+            this.GetComponent<MeshRenderer>().material.color = new Color(0, 1, 0, 0.8f);
+        }
+        else if (damageTimer != 0)
+        {
+            damageTimer -= Time.deltaTime;
+        }
+
+        switch (targetState)
         {
             case TargetState.Patroling:
                 //Check if waypoint reached
@@ -76,7 +92,7 @@ public class AIController : MonoBehaviour
                 }
 
                 //If next to player, attack them
-                if (Vector3.Distance(this.GetComponent<Transform>().position, player.GetComponent<Transform>().position) < 10)
+                if (Vector3.Distance(this.GetComponent<Transform>().position, player.GetComponent<Transform>().position) < 5)
                 {
                     targetState = TargetState.Attacking;
                 }
@@ -111,6 +127,11 @@ public class AIController : MonoBehaviour
     public void TakeDamage()
     {
         hp--;
+        //Damage color
+        damageTimer = 1;
+        this.GetComponent<MeshRenderer>().material.color = new Color(1, 0, 0, 0.8f);
+
+        //Death check
         if (hp <= 0)
         {
             if (this.transform.localScale == new Vector3(5, 5, 5))
@@ -123,7 +144,7 @@ public class AIController : MonoBehaviour
             else if (this.transform.localScale == new Vector3(3, 3, 3))
             {
                 this.transform.localScale = new Vector3(1, 1, 1);
-                this.GetComponent<NavMeshAgent>().baseOffset = 0.1f;
+                this.GetComponent<NavMeshAgent>().baseOffset = 0f;
                 hp = 1;
                 GameObject.Instantiate(this, this.transform.position, this.transform.rotation);
             }
