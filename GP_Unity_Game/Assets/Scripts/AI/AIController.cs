@@ -22,7 +22,7 @@ public class AIController : MonoBehaviour
     private int hp;
     private float damageTimer;
     private int attackRange;
-    private float attackDelay;
+    public float attackDelay;
 
     public enum TargetState
     {
