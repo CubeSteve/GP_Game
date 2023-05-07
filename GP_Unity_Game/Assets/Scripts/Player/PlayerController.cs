@@ -96,20 +96,19 @@ public class PlayerController : MonoBehaviour
                 {
                     spline.GetComponent<SplineController>().SetSplineSpeed(-movementX * Time.deltaTime * speed / 500);
                     animator.SetBool("isMoving", true);
+                    characterMesh.localRotation = Quaternion.Euler(0, -90, 0);
                 }
                 else if (movementX > 0)
                 {
                     spline.GetComponent<SplineController>().SetSplineSpeed(-movementX * Time.deltaTime * speed / 500);
                     animator.SetBool("isMoving", true);
-                }
-                else
-                {
-                    animator.SetBool("isMoving", false);
+                    characterMesh.localRotation = Quaternion.Euler(0, 90, 0);
                 }
             }
             else
             {
                 spline.GetComponent<SplineController>().SetSplineSpeed(-Time.deltaTime / 1.2f);
+                animator.SetBool("isMoving", false);
             }
         }
 
@@ -425,23 +424,32 @@ public class PlayerController : MonoBehaviour
         onSpline = true;
         movementX = 0;
         movementY = 0;
+        this.transform.rotation = Quaternion.Euler(0, 0, 0);
 
         cam.transform.localPosition = new Vector3(0, 3.5f, -4.5f);
-        cam.transform.rotation = Quaternion.Euler(15, 0, 0);
-        cam.RotateAround(this.transform.position, Vector3.up, 90);
+        cam.LookAt(this.transform.position);
+        cam.Rotate(-22, 0, 0);
+        //cam.transform.rotation = Quaternion.Euler(15, 0, 0);
+        //cam.RotateAround(this.transform.position, Vector3.up, 90);
+        orientation.rotation = cam.rotation;
+        orientation.position = cam.position;
 
-        characterMesh.transform.rotation = Quaternion.Euler(0, 0, 0);
+        characterMesh.transform.rotation = Quaternion.Euler(0, -90, 0);
     }
 
     public void EndSpline()
     {
         onSpline = false;
-        cam.transform.localPosition = new Vector3(0, 3.5f, -4.5f);
-        cam.transform.rotation = Quaternion.Euler(15, 0, 0);
-        cam.RotateAround(this.transform.position, Vector3.up, -90);
+
+        cam.LookAt(this.transform.position);
+        cam.Rotate(-22, 0, 0);
+        //cam.transform.localPosition = new Vector3(0, 3.5f, -4.5f);
+        //cam.transform.rotation = Quaternion.Euler(15, 0, 0);
+        //cam.RotateAround(this.transform.position, Vector3.up, -90);
         orientation.rotation = cam.rotation;
 
         characterMesh.transform.rotation = cam.rotation;
+        characterMesh.transform.Rotate(new Vector3(-15, 0, 0));
     }
 
     /*

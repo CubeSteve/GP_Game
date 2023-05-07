@@ -23,12 +23,12 @@ public class SplineController : MonoBehaviour
             if (playerCarrier.GetComponent<SplineAnimate>().elapsedTime < 0 || playerCarrier.GetComponent<SplineAnimate>().elapsedTime > 65)
             {
                 //Reset player variables
-                player.transform.position = GetComponentInParent<Transform>().position;
+                //player.transform.position = GetComponentInParent<Transform>().position;
                 player.transform.SetParent(null);
 
                 //Reset spline animation
                 playerCarrier.GetComponent<SplineAnimate>().Pause();
-                playerCarrier.GetComponent<SplineAnimate>().elapsedTime = 0;
+                playerCarrier.GetComponent<SplineAnimate>().elapsedTime = 0.1f;
 
                 player.GetComponent<PlayerController>().EndSpline();
             }
@@ -41,9 +41,9 @@ public class SplineController : MonoBehaviour
         {
             if (!player.GetComponent<PlayerController>().onSpline)
             {
+                playerCarrier.GetComponent<SplineAnimate>().elapsedTime = 0.1f;
                 playerCarrier.GetComponent<SplineAnimate>().Play();
                 player.transform.SetParent(playerCarrier.transform);
-                player.transform.localPosition = Vector3.zero;
 
                 player.GetComponent<PlayerController>().StartSpline();
             }
