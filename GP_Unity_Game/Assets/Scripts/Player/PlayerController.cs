@@ -78,11 +78,11 @@ public class PlayerController : MonoBehaviour
             // print("X Vel: " + rb.velocity.x + " Mag: " + movement.x + " mmX: " + movementX + " --- Y Vel: " + rb.velocity.z + " Mag: " + movement.z + " mmY: " + movementY);
 
             // Update animation
-            if ((rb.velocity.x > 0.2 || rb.velocity.x < -0.2 || rb.velocity.z > 0.2 || rb.velocity.z < -0.2) && animator.GetBool("isMoving") == false)
+            if ((rb.velocity.x > 0.1 || rb.velocity.x < -0.1 || rb.velocity.z > 0.1 || rb.velocity.z < -0.1) && animator.GetBool("isMoving") == false)
             {
                 animator.SetBool("isMoving", true);
             }
-            else if (((rb.velocity.x < 0.2 && rb.velocity.x > -0.2) || (rb.velocity.z < 0.2 && rb.velocity.z > -0.2)) && animator.GetBool("isMoving") == true)
+            else if (((rb.velocity.x < 0.1 && rb.velocity.x > -0.1) || (rb.velocity.z < 0.1 && rb.velocity.z > -0.1)) && animator.GetBool("isMoving") == true)
             {
                 animator.SetBool("isMoving", false);
             }
@@ -447,6 +447,7 @@ public class PlayerController : MonoBehaviour
         //cam.transform.rotation = Quaternion.Euler(15, 0, 0);
         //cam.RotateAround(this.transform.position, Vector3.up, -90);
         orientation.rotation = cam.rotation;
+        orientation.transform.Rotate(new Vector3(-15, 0, 0));
 
         characterMesh.transform.rotation = cam.rotation;
         characterMesh.transform.Rotate(new Vector3(-15, 0, 0));

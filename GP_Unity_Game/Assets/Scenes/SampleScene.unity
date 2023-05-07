@@ -265,7 +265,7 @@ GameObject:
   - component: {fileID: 53228006}
   - component: {fileID: 53228010}
   - component: {fileID: 53228011}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Switch
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9921,7 +9921,7 @@ GameObject:
   - component: {fileID: 2014174985}
   - component: {fileID: 2014174990}
   - component: {fileID: 2014174991}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
   m_Icon: {fileID: 0}
