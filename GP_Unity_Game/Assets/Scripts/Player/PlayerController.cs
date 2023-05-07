@@ -24,6 +24,7 @@ public class PlayerController : MonoBehaviour
     public Transform attackInteractionZone;
     public Transform pauseCanvas;
     public Transform damageCanvas;
+    public Transform spline;
 
     public float speed = 4000;
     public float maxSpeed = 5000;
@@ -37,6 +38,8 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public bool targeting;
 
     public float iFrames = 1;
+    [HideInInspector] public bool onSpline;
+    private bool onSplineMoving;
 
     // Start is called before the first frame update
     void Start()
@@ -55,28 +58,59 @@ public class PlayerController : MonoBehaviour
         //Targeting
         target = null;
         targeting = false;
+
+        onSpline = false;
+        onSplineMoving = false;
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        Vector3 movement = new Vector3(movementX, 0.0f, movementY);
-
-        CounterMovement(movement);
-
-        rb.AddForce(orientation.transform.forward * movement.z * speed);
-        rb.AddForce(orientation.transform.right * movement.x * speed);
-
-        // print("X Vel: " + rb.velocity.x + " Mag: " + movement.x + " mmX: " + movementX + " --- Y Vel: " + rb.velocity.z + " Mag: " + movement.z + " mmY: " + movementY);
-
-        // Update animation
-        if ((rb.velocity.x > 0.2 || rb.velocity.x < -0.2 || rb.velocity.z > 0.2 || rb.velocity.z < -0.2) && animator.GetBool("isMoving") == false)
+        if (!onSpline)
         {
-            animator.SetBool("isMoving", true);
+            Vector3 movement = new Vector3(movementX, 0.0f, movementY);
+
+            CounterMovement(movement);
+
+            rb.AddForce(orientation.transform.forward * movement.z * speed);
+            rb.AddForce(orientation.transform.right * movement.x * speed);
+
+            // print("X Vel: " + rb.velocity.x + " Mag: " + movement.x + " mmX: " + movementX + " --- Y Vel: " + rb.velocity.z + " Mag: " + movement.z + " mmY: " + movementY);
+
+            // Update animation
+            if ((rb.velocity.x > 0.2 || rb.velocity.x < -0.2 || rb.velocity.z > 0.2 || rb.velocity.z < -0.2) && animator.GetBool("isMoving") == false)
+            {
+                animator.SetBool("isMoving", true);
+            }
+            else if (((rb.velocity.x < 0.2 && rb.velocity.x > -0.2) || (rb.velocity.z < 0.2 && rb.velocity.z > -0.2)) && animator.GetBool("isMoving") == true)
+            {
+                animator.SetBool("isMoving", false);
+            }
         }
-        else if (((rb.velocity.x < 0.2 && rb.velocity.x > -0.2) || (rb.velocity.z < 0.2 && rb.velocity.z > -0.2)) && animator.GetBool("isMoving") == true)
+
+        else if (onSpline)
         {
-            animator.SetBool("isMoving", false);
+            if (onSplineMoving)
+            {
+                if (movementX < 0)
+                {
+                    spline.GetComponent<SplineController>().SetSplineSpeed(-movementX * Time.deltaTime * speed / 500);
+                    animator.SetBool("isMoving", true);
+                }
+                else if (movementX > 0)
+                {
+                    spline.GetComponent<SplineController>().SetSplineSpeed(-movementX * Time.deltaTime * speed / 500);
+                    animator.SetBool("isMoving", true);
+                }
+                else
+                {
+                    animator.SetBool("isMoving", false);
+                }
+            }
+            else
+            {
+                spline.GetComponent<SplineController>().SetSplineSpeed(-Time.deltaTime / 1.2f);
+            }
         }
 
         // Move camera
@@ -130,7 +164,6 @@ public class PlayerController : MonoBehaviour
          */
 
         Vector2 movementVector = movementValue.Get<Vector2>();
-
         movementX = movementVector.x;
         movementY = movementVector.y;
 
@@ -139,6 +172,15 @@ public class PlayerController : MonoBehaviour
         if (movementX < 0 && movementX < -maxSpeed) movementX = 0;
         if (movementY > 0 && movementY > maxSpeed) movementY = 0;
         if (movementY < 0 && movementY < -maxSpeed) movementY = 0;
+
+        if (onSpline && movementVector.x != 0)
+        {
+            onSplineMoving = true;
+        }
+        else
+        {
+            onSplineMoving = false;
+        }
     }
 
     private void OnLook(InputValue lookValue)
@@ -148,19 +190,22 @@ public class PlayerController : MonoBehaviour
          * Moves camera
          */
 
-        lookVector = lookValue.Get<Vector2>();
-        // If not paused
-        if (Time.timeScale != 0)
+        if (!onSpline)
         {
-            cam.transform.RotateAround(rotationPoint.transform.position, Vector3.up, lookVector.x * cameraSensitivityX);
-            //cam.transform.RotateAround(rotationPoint.transform.position, Vector3.left, lookVector.y * cameraSensitivityY);
+            lookVector = lookValue.Get<Vector2>();
+            // If not paused
+            if (Time.timeScale != 0)
+            {
+                cam.transform.RotateAround(rotationPoint.transform.position, Vector3.up, lookVector.x * cameraSensitivityX);
+                //cam.transform.RotateAround(rotationPoint.transform.position, Vector3.left, lookVector.y * cameraSensitivityY);
 
-            orientation.transform.RotateAround(rotationPoint.transform.position, Vector3.up, lookVector.x * cameraSensitivityX);
-            //orientation.transform.RotateAround(rotationPoint.transform.position, Vector3.left, lookVector.y * cameraSensitivityY); Specifically not this
-            characterMesh.transform.RotateAround(rotationPoint.transform.position, Vector3.up, lookVector.x * cameraSensitivityX);
-            //characterMesh.transform.RotateAround(rotationPoint.transform.position, Vector3.left, lookVector.y * cameraSensitivityY);
+                orientation.transform.RotateAround(rotationPoint.transform.position, Vector3.up, lookVector.x * cameraSensitivityX);
+                //orientation.transform.RotateAround(rotationPoint.transform.position, Vector3.left, lookVector.y * cameraSensitivityY); Specifically not this
+                characterMesh.transform.RotateAround(rotationPoint.transform.position, Vector3.up, lookVector.x * cameraSensitivityX);
+                //characterMesh.transform.RotateAround(rotationPoint.transform.position, Vector3.left, lookVector.y * cameraSensitivityY);
 
-            lookExecuted = true;
+                lookExecuted = true;
+            }
         }
     }
 
@@ -213,18 +258,21 @@ public class PlayerController : MonoBehaviour
 
     private void OnTarget()
     {
-        if (target != null && !targeting)
+        if (!onSpline)
         {
-            targeting = true;
-            cam.LookAt(target.transform);
-        }
+            if (target != null && !targeting)
+            {
+                targeting = true;
+                cam.LookAt(target.transform);
+            }
 
-        else if (targeting)
-        {
-            targeting = false;
-            cam.LookAt(this.transform);
-            cam.Rotate(-22, 0, 0);
-            //cam.rotation = Quaternion.Euler(15, cam.rotation.y, cam.rotation.z);
+            else if (targeting)
+            {
+                targeting = false;
+                cam.LookAt(this.transform);
+                cam.Rotate(-22, 0, 0);
+                //cam.rotation = Quaternion.Euler(15, cam.rotation.y, cam.rotation.z);
+            }
         }
     }
 
@@ -368,6 +416,32 @@ public class PlayerController : MonoBehaviour
             takingDamage = true;
             damageCanvas.gameObject.SetActive(true);
         }
+    }
+
+    public void StartSpline()
+    {
+        rb.velocity = Vector3.zero;
+
+        onSpline = true;
+        movementX = 0;
+        movementY = 0;
+
+        cam.transform.localPosition = new Vector3(0, 3.5f, -4.5f);
+        cam.transform.rotation = Quaternion.Euler(15, 0, 0);
+        cam.RotateAround(this.transform.position, Vector3.up, 90);
+
+        characterMesh.transform.rotation = Quaternion.Euler(0, 0, 0);
+    }
+
+    public void EndSpline()
+    {
+        onSpline = false;
+        cam.transform.localPosition = new Vector3(0, 3.5f, -4.5f);
+        cam.transform.rotation = Quaternion.Euler(15, 0, 0);
+        cam.RotateAround(this.transform.position, Vector3.up, -90);
+        orientation.rotation = cam.rotation;
+
+        characterMesh.transform.rotation = cam.rotation;
     }
 
     /*
